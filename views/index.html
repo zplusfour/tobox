@@ -17,8 +17,8 @@
       <% if (user.todos.length===0) { %>
         <p>You currently have no todos... <a href='/new'>Create a new one!</a></p>
         <% } else { %>
+          <h2 class='subtitle'>Your todos:</h2>
           <% user.todos.forEach((todo)=> { %>
-            <h2 class='subtitle'>Your todos:</h2>
 
             <div class='box'>
               <p class='subtitle'>

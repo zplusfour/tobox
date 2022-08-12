@@ -1,0 +1,4 @@
+run = "npx ts-node-dev --respawn src/index.ts"
+
+[nix]
+channel = "stable-21_11"

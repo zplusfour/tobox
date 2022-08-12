@@ -1,7 +1,7 @@
 import express from 'express';
 import ejs from 'ejs';
 import mongoose, { ObjectId } from 'mongoose';
-import { marked } from 'marked';
+// import { marked } from 'marked';
 import { User } from './db/schemas';
 import dotenv from 'dotenv';
 import api from './api';
@@ -22,7 +22,7 @@ mongoose.connect(`${process.env.MDB_URI}`);
 app.get('/', async (req: express.Request, res: express.Response) => {
 	const user = req.cookies['user'];
 	if (user) {
-		res.render('index', { user: await User.findOne({ user }) });
+		res.render('index', { user: await User.findOne({ username: cryptr.decrypt(user) }) });
 	} else {
 		res.redirect('/signin');
 	}
@@ -69,6 +69,6 @@ app.get('/edit/:id', async (req: express.Request, res: express.Response) => {
 	}
 });
 
-app.listen(3000, () => {
-	console.log('Listening on port 3000');
+app.listen(8080, () => {
+	console.log('Listening on port 8080');
 });

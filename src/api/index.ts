@@ -10,7 +10,7 @@ router.use(express.json());
 router.use(express.urlencoded({ extended: false }));
 router.use(cookieParser());
 
-router.get('/', (req: express.Request, res: express.Response) => {
+router.get('/', (_req: express.Request, res: express.Response) => {
 	res.json({ message: 'OK', status: 200 });
 });
 
