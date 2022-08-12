@@ -1,45 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+    />
+    <script
+      src="https://kit.fontawesome.com/2f44f06d81.js"
+      crossorigin="anonymous"
+    ></script>
+		<link rel="stylesheet" type="text/css" href="https://unpkg.com/bulma-prefers-dark" />
+    <style>
+      body {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+      }
+    </style>
+    <title>Sign in</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-  <script src="https://kit.fontawesome.com/2f44f06d81.js" crossorigin="anonymous"></script>
-  <style>
-    body {
-      margin: 0;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      -ms-transform: translate(-50%, -50%);
-      transform: translate(-50%, -50%);
-    }
-  </style>
-  <title>Sign in</title>
-</head>
-
-<body>
-  <h1 class='title'>Sign in</h1>
-  <form class='box' action='/api/signin' method='POST'>
-    <div class='field'>
-      <label class='label'>Username</label>
-      <div class='control'>
-        <input class='input' type='text' id='username' name='username' placeholder='Username'>
+  <body>
+    <h1 class="title">Sign in</h1>
+    <form class="box" action="/api/signin" method="POST">
+      <div class="field">
+        <label class="label">Username</label>
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            id="username"
+            name="username"
+            placeholder="Username"
+          />
+        </div>
       </div>
-    </div>
 
-    <div class='field'>
-      <label class='label'>Password</label>
-      <div class='control'>
-        <input class='input' type='password' id='password' name='password' placeholder='Password'>
+      <div class="field">
+        <label class="label">Password</label>
+        <div class="control">
+          <input
+            class="input"
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Password"
+          />
+        </div>
       </div>
-    </div>
 
-    <button class='button is-primary'>Sign in</button>
-  </form>
-  <footer>Or instead, <a href='/signup'>create an account</a>.</footer>
-</body>
-
+      <button class="button is-primary">Sign in</button>
+    </form>
+    <footer>Or instead, <a href="/signup">create an account</a>.</footer>
+  </body>
 </html>

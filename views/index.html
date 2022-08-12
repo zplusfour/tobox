@@ -1,43 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+    />
+    <script
+      src="https://kit.fontawesome.com/2f44f06d81.js"
+      crossorigin="anonymous"
+    ></script>
+		<link rel="stylesheet" type="text/css" href="https://unpkg.com/bulma-prefers-dark" />
+    <title>Dashboard</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-  <script src="https://kit.fontawesome.com/2f44f06d81.js" crossorigin="anonymous"></script>
-  <title>Dashboard</title>
-</head>
+  <body style="padding: 50px">
+    <h2 class="title">Hey, <%= user.username %>! <button class="button is-primary is-rounded" style="float: right;" onclick="window.location = '/new'"><i class="fa-solid fa-plus"></i></button></h2>
+    <div class="block">
+      <div>
+				<div>
+        	<% if (user.todos.length===0) { %>
+        	<p>
+          	You currently have no todos... <a href="/new">Create a new one!</a>
+        	</p>
+        	<% } else { %>
+        	<h2 class="subtitle">Your todos:</h2>
+        	<% user.todos.forEach((todo)=> { %>
 
-<body style='padding: 50px;'>
-  <div class='box'>
-    <h1 class='title'>Hey, <%= user.username %>!</h1>
-    <div class='block'>
-      <% if (user.todos.length===0) { %>
-        <p>You currently have no todos... <a href='/new'>Create a new one!</a></p>
-        <% } else { %>
-          <h2 class='subtitle'>Your todos:</h2>
-          <% user.todos.forEach((todo)=> { %>
-
-            <div class='box'>
-              <p class='subtitle'>
-                <b>
-                  <%= todo.title %>
-                </b>&nbsp;
-                <span style='color: grey;'>
-                  <%= todo.date %>
-                </span><br /><br /><button class='button is-info'
-                  onclick='window.location = "/edit/<%= todo.todoId %>"'><i
-                    class="fas fa-pencil-alt"></i>&nbsp;&nbsp;Edit</button>
-                <button class='button is-danger' onclick='window.location = "/api/del/<%= todo.todoId %>"'><i
-                    class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete</button>
-              </p>
-            </div>
-            <% }); %>
-              <% } %>
+        	<div class="box">
+          	<p class="subtitle">
+            	<b> <%= todo.title %> </b>&nbsp;
+            	<span style="color: grey"> <%= todo.date %> </span
+            	><br /><br /><button
+              	class="button is-info"
+              	onclick='window.location = "/edit/<%= todo.todoId %>"'
+            	>
+              	<i class="fas fa-pencil-alt"></i>&nbsp;&nbsp;Edit
+            	</button>&nbsp;
+            	<button
+              	class="button is-danger"
+              	onclick='window.location = "/api/del/<%= todo.todoId %>"'
+            	>
+              	<i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete
+            	</button>
+          	</p>
+					</div>
+        </div>
+        <% }); %> <% } %>
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

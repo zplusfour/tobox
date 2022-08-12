@@ -1,68 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+    />
+    <script
+      src="https://kit.fontawesome.com/2f44f06d81.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://unpkg.com/bulma-prefers-dark" />
+    <style>
+      .split {
+        height: 100%;
+        width: 50%;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        overflow-x: hidden;
+        padding-top: 20px;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-  <script src="https://kit.fontawesome.com/2f44f06d81.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
-  <style>
-    .split {
-      height: 100%;
-      width: 50%;
-      position: fixed;
-      z-index: 1;
-      top: 0;
-      overflow-x: hidden;
-      padding-top: 20px;
-    }
+      .left {
+        left: 0;
+      }
 
-    .left {
-      left: 0;
-    }
+      .right {
+        right: 0;
+      }
 
-    .right {
-      right: 0;
-    }
+      .textarea {
+        width: 100%;
+        height: 99.3%;
+        font-size: 20px;
+      }
 
-    .textarea {
-      width: 100%;
-      height: 99.3%;
-      font-size: 20px;
-    }
+      .input {
+        width: 50%;
+      }
+    </style>
+    <title>New</title>
+  </head>
 
-    .input {
-      width: 50%;
-    }
-  </style>
-  <title>New</title>
-</head>
-
-<body>
-  <h1 class='title'>New todo</h1>
-  <form class='box' action='/api/new' method='POST'>
-    <div class='split left box'>
-      <div class='control'>
-        <input class='input' id='title' name='title' placeholder='Title' required />&nbsp;&nbsp;<button
-          class='button is-primary' type='submit'><i class="fas fa-save"></i>&nbsp;&nbsp;Save</button>
-      </div><br />
-      <textarea class='textarea' id='content' name='content' placeholder='...' oninput='preview()'
-        required># Start editing here!</textarea>
-    </div>
-    <div class='split right content box' id='preview'>
-
-    </div>
-  </form>
-  <script>
-    function preview() {
-      var content = document.getElementById('content').value;
-      document.getElementById("preview").innerHTML = filterXSS(marked.parse(content));
-    }
-    preview();
-  </script>
-</body>
-
+  <body>
+    <h1 class="title">New todo</h1>
+    <form class="box" action="/api/new" method="POST">
+      <div class="split left box">
+        <div class="control">
+          <input
+            class="input"
+            id="title"
+            name="title"
+            placeholder="Title"
+            required
+          />&nbsp;&nbsp;<button class="button is-primary is-rounded" type="submit">
+            <i class="fas fa-save"></i>&nbsp;&nbsp;Save
+          </button>
+        </div>
+        <br />
+        <textarea
+          class="textarea"
+          id="content"
+          name="content"
+          placeholder="..."
+          oninput="preview()"
+          required
+        >
+# Start editing here!</textarea
+        >
+      </div>
+      <div class="split right content box" id="preview"></div>
+    </form>
+    <script>
+      function preview() {
+        var content = document.getElementById("content").value;
+        document.getElementById("preview").innerHTML = filterXSS(
+          marked.parse(content)
+        );
+      }
+      preview();
+    </script>
+  </body>
 </html>
