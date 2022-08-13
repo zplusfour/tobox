@@ -16,6 +16,9 @@ router.get("/", (_req: express.Request, res: express.Response) => {
 
 router.post("/signup", async (req: express.Request, res: express.Response) => {
   const { username, password } = req.body;
+	if (!username || !password) {
+		res.redirect("/signup");
+	}
   const enpassword = cryptr.encrypt(password);
 
   if (await User.findOne({ username })) {
@@ -41,6 +44,9 @@ router.post("/signup", async (req: express.Request, res: express.Response) => {
 
 router.post("/signin", async (req: express.Request, res: express.Response) => {
   const { username, password } = req.body;
+	if (!username || !password) {
+		res.redirect("/signin");
+	}
   const user = await User.findOne({ username });
   if (user) {
     if (cryptr.decrypt(user.password) === password) {
