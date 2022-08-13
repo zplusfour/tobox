@@ -25,12 +25,20 @@
       Hey, <%= user.username %>!
       <button
         class="button is-primary is-rounded"
-        style="float: right"
+        style="float: right; margin: 3px 3px 3px 3px"
         onclick="window.location = '/new'"
       >
         <i class="fa-solid fa-plus"></i>
       </button>
+      <button
+        class="button is-danger is-rounded"
+        style="float: right; margin: 3px 3px 3px 3px"
+        onclick="window.location = '/api/logout'"
+      >
+        <i class="fas fa-door-open"></i>
+      </button>
     </h2>
+    <hr />
     <div class="block">
       <div>
         <div>

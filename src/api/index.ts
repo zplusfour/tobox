@@ -110,4 +110,14 @@ router.post(
   }
 );
 
+router.get("/logout", async (req: express.Request, res: express.Response) => {
+  const user = req.cookies["user"];
+  if (user) {
+    res.cookie("user", "");
+    res.redirect("/");
+  } else {
+    res.redirect("/signin");
+  }
+});
+
 export default router;
