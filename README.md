@@ -1,3 +1,3 @@
 # Tobox
 
-A fully functional todo app with lots of features!
+A functional todo app with a ✨ live markdown editor ✨!
