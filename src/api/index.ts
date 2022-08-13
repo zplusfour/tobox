@@ -11,11 +11,7 @@ router.use(express.urlencoded({ extended: false }));
 router.use(cookieParser());
 
 const isEmpty = (str: any) => {
-  if (!str.match(/\S/)) {
-    return true;
-  } else {
-    return false;
-  }
+  return str.length === 0 || this == " " || /^\s*$/.test(str);
 };
 
 router.get("/", (_req: express.Request, res: express.Response) => {
@@ -24,9 +20,20 @@ router.get("/", (_req: express.Request, res: express.Response) => {
 
 router.post("/signup", async (req: express.Request, res: express.Response) => {
   const { username, password } = req.body;
-  if (isEmpty(username) || isEmpty(password)) {
-    return res.redirect("/signup");
-  }
+	console.log(req.body);
+	if (req.body === null) {
+		return res.redirect("/signup");
+	}
+
+	if (username || password) {
+  	if (isEmpty(username) || isEmpty(password)) {
+    	return res.redirect("/signup");
+  	}
+	}
+
+	if (username === "" || password === "") {
+		return res.redirect("/signup");
+	}
 
   if (!username || !password) {
     return res.redirect("/signup");
@@ -56,13 +63,25 @@ router.post("/signup", async (req: express.Request, res: express.Response) => {
 
 router.post("/signin", async (req: express.Request, res: express.Response) => {
   const { username, password } = req.body;
-  if (isEmpty(username) || isEmpty(password)) {
-    return res.redirect("/signin");
-  }
+	console.log(req.body);
+	if (req.body === null) {
+		return res.redirect("/signin");
+	}
+
+	if (username || password) {
+  	if (isEmpty(username) || isEmpty(password)) {
+    	return res.redirect("/signin");
+  	}
+	}
+
+	if (username === "" || password === "") {
+		return res.redirect("/signin");
+	}
 
   if (!username || !password) {
     return res.redirect("/signin");
   }
+	
   const user = await User.findOne({ username });
   if (user) {
     if (cryptr.decrypt(user.password) === password) {
