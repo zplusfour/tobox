@@ -69,15 +69,15 @@ app.get("/edit/:id", async (req: express.Request, res: express.Response) => {
     }) => todo.todoId === id
   );
 
-	if (username) {
-		if (typeof todo === "undefined") {
-			res.render("error", { err: 'Todo not found.' })
-		} else {
-    	res.render("edit", { user: await User.findOne({ username }), todo });
-		}
+  if (username) {
+    if (typeof todo === "undefined") {
+      res.render("error", { err: "Todo not found." });
+    } else {
+      res.render("edit", { user: await User.findOne({ username }), todo });
+    }
   } else {
-  	res.redirect("/signin");
-	}
+    res.redirect("/signin");
+  }
 });
 
 app.listen(8080, () => {
