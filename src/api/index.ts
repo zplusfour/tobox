@@ -10,14 +10,26 @@ router.use(express.json());
 router.use(express.urlencoded({ extended: false }));
 router.use(cookieParser());
 
+const isEmpty = (str: any) => {
+  if (!str.match(/\S/)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 router.get("/", (_req: express.Request, res: express.Response) => {
   res.json({ message: "OK", status: 200 });
 });
 
 router.post("/signup", async (req: express.Request, res: express.Response) => {
   const { username, password } = req.body;
+  if (isEmpty(username) || isEmpty(password)) {
+    return res.redirect("/signup");
+  }
+
   if (!username || !password) {
-    res.redirect("/signup");
+    return res.redirect("/signup");
   }
   const enpassword = cryptr.encrypt(password);
 
@@ -44,8 +56,12 @@ router.post("/signup", async (req: express.Request, res: express.Response) => {
 
 router.post("/signin", async (req: express.Request, res: express.Response) => {
   const { username, password } = req.body;
+  if (isEmpty(username) || isEmpty(password)) {
+    return res.redirect("/signin");
+  }
+
   if (!username || !password) {
-    res.redirect("/signin");
+    return res.redirect("/signin");
   }
   const user = await User.findOne({ username });
   if (user) {
@@ -77,6 +93,14 @@ router.get("/del/:id", async (req: express.Request, res: express.Response) => {
 
 router.post("/new", async (req: express.Request, res: express.Response) => {
   const { title, content } = req.body;
+  if (isEmpty(title)) {
+    return res.redirect("/new");
+  }
+
+  if (!title || !content) {
+    return res.redirect("/new");
+  }
+
   const user = await User.findOne({
     username: cryptr.decrypt(req.cookies["user"]),
   });
@@ -100,6 +124,12 @@ router.post(
   async (req: express.Request, res: express.Response) => {
     const { id } = req.params;
     const { title, content } = req.body;
+    if (isEmpty(title)) {
+      return res.redirect(`/edit/${id}`);
+    }
+    if (!title || !content) {
+      return res.redirect(`/edit/${id}`);
+    }
     const user = await User.findOne({
       username: cryptr.decrypt(req.cookies["user"]),
     });
