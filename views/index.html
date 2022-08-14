@@ -54,7 +54,7 @@
 
           <div class="box">
             <p class="subtitle">
-              <b> <%= todo.title %> </b>&nbsp;
+              <b> <a href="/view/<%= todo.todoId %>"><%= todo.title %></a> </b>&nbsp;
               <span style="color: grey"> <%= todo.date %> </span
               ><br />
 							<form action="/api/del/<%= todo.todoId %>" method="POST">

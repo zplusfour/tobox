@@ -91,10 +91,33 @@ app.get("/edit/:id", async (req: express.Request, res: express.Response) => {
     if (typeof todo === "undefined") {
       res.render("error", { err: "Todo not found." });
     } else {
-      res.render("edit", { user: await User.findOne({ username }), todo });
+      res.render("edit", { todo });
     }
   } else {
     res.redirect("/signin");
+  }
+});
+
+app.get("/view/:id", async (req: express.Request, res: express.Response) => {
+  const { id } = req.params;
+  const username = req.cookies["user"];
+  const user: any = await User.findOne({ username: cryptr.decrypt(username) });
+  const todo = user.todos.find(
+    (todo: {
+      todoId: string;
+      title: string;
+      content: string;
+      date: string;
+      _id: ObjectId;
+    }) => todo.todoId === id
+  );
+
+  if (username) {
+    if (typeof todo === "undefined") {
+      res.render("error", { err: "Todo not found." });
+    } else {
+      res.render("view", { todo });
+    }
   }
 });
 
