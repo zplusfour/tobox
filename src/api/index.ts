@@ -25,7 +25,7 @@ router.use(express.urlencoded({ extended: false }));
 router.use(cookieParser());
 
 const isEmpty = (str: any) => {
-  return str.length === 0 || this == " " || /^\s*$/.test(str);
+  return str.length === 0 || str == " " || /^\s*$/.test(str);
 };
 
 router.get("/", (_req: express.Request, res: express.Response) => {
