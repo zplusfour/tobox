@@ -1,11 +1,25 @@
 import express from "express";
 import Cryptr from "cryptr";
+import * as argon2 from "argon2";
 import cookieParser from "cookie-parser";
 import { v4 as uuidv4 } from "uuid";
+import dotenv from "dotenv";
 import { TodoInterface, User } from "../db/schemas";
-const router = express.Router();
-const cryptr = new Cryptr("verysecretpasswordxkjwloi2xnrewi");
+import rateLimit from "express-rate-limit";
 
+dotenv.config();
+
+const router = express.Router();
+const cryptr = new Cryptr(`${process.env.SUPER_SECRET}`);
+
+const apiLimiter = rateLimit({
+  windowMs: 16 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+router.use(apiLimiter);
 router.use(express.json());
 router.use(express.urlencoded({ extended: false }));
 router.use(cookieParser());
@@ -20,32 +34,31 @@ router.get("/", (_req: express.Request, res: express.Response) => {
 
 router.post("/signup", async (req: express.Request, res: express.Response) => {
   const { username, password } = req.body;
-	console.log(req.body);
-	if (req.body === null) {
-		return res.redirect("/signup");
-	}
+  if (req.body === null) {
+    return res.redirect("/signup");
+  }
 
-	if (username || password) {
-  	if (isEmpty(username) || isEmpty(password)) {
-    	return res.redirect("/signup");
-  	}
-	}
+  if (username || password) {
+    if (isEmpty(username) || isEmpty(password)) {
+      return res.redirect("/signup");
+    }
+  }
 
-	if (username === "" || password === "") {
-		return res.redirect("/signup");
-	}
+  if (username === "" || password === "") {
+    return res.redirect("/signup");
+  }
 
   if (!username || !password) {
     return res.redirect("/signup");
   }
-  const enpassword = cryptr.encrypt(password);
+  const hashedPassword = await argon2.hash(password);
 
   if (await User.findOne({ username })) {
     res.json({ message: "Username already exists", status: 400 });
   } else {
     const user = new User({
       username,
-      password: enpassword,
+      password: hashedPassword,
       todos: [
         {
           todoId: uuidv4(),
@@ -63,28 +76,27 @@ router.post("/signup", async (req: express.Request, res: express.Response) => {
 
 router.post("/signin", async (req: express.Request, res: express.Response) => {
   const { username, password } = req.body;
-	console.log(req.body);
-	if (req.body === null) {
-		return res.redirect("/signin");
-	}
+  if (req.body === null) {
+    return res.redirect("/signin");
+  }
 
-	if (username || password) {
-  	if (isEmpty(username) || isEmpty(password)) {
-    	return res.redirect("/signin");
-  	}
-	}
+  if (username || password) {
+    if (isEmpty(username) || isEmpty(password)) {
+      return res.redirect("/signin");
+    }
+  }
 
-	if (username === "" || password === "") {
-		return res.redirect("/signin");
-	}
+  if (username === "" || password === "") {
+    return res.redirect("/signin");
+  }
 
   if (!username || !password) {
     return res.redirect("/signin");
   }
-	
+
   const user = await User.findOne({ username });
   if (user) {
-    if (cryptr.decrypt(user.password) === password) {
+    if (await argon2.verify(user.password, password)) {
       res.cookie("user", cryptr.encrypt(username));
       res.redirect("/");
     } else {
@@ -95,46 +107,79 @@ router.post("/signin", async (req: express.Request, res: express.Response) => {
   }
 });
 
-router.get("/del/:id", async (req: express.Request, res: express.Response) => {
+router.post("/del/:id", async (req: express.Request, res: express.Response) => {
   const { id } = req.params;
-  const user = await User.findOne({
-    username: cryptr.decrypt(req.cookies["user"]),
-  });
-  if (user) {
-    const todos = user.todos.filter((todo) => todo.todoId !== id);
-    user.todos = todos;
-    await user.save();
-    res.redirect("/");
+  if (req.cookies["user"]) {
+    try {
+      const user = await User.findOne({
+        username: cryptr.decrypt(req.cookies["user"]),
+      });
+      if (user) {
+        const todos = user.todos.filter((todo) => todo.todoId !== id);
+        user.todos = todos;
+        await user.save();
+        res.redirect("/");
+      } else {
+        res.redirect("/signin");
+      }
+    } catch (e) {
+      if (e.name === "TypeError") {
+        return res.redirect("/signin");
+      }
+    }
   } else {
-    res.redirect("/signin");
+    return res.redirect("/signin");
   }
 });
 
 router.post("/new", async (req: express.Request, res: express.Response) => {
   const { title, content } = req.body;
-  if (isEmpty(title)) {
+  if (req.body === null) {
+    return res.redirect("/new");
+  }
+
+  if (typeof title === "undefined" || typeof content === "undefined") {
+    return res.redirect("/new");
+  }
+
+  if (title || content) {
+    if (isEmpty(title) || isEmpty(content)) {
+      return res.redirect("/new");
+    }
+  }
+
+  if (title === "" || content === "") {
     return res.redirect("/new");
   }
 
   if (!title || !content) {
     return res.redirect("/new");
   }
-
-  const user = await User.findOne({
-    username: cryptr.decrypt(req.cookies["user"]),
-  });
-  if (user) {
-    const todo = {
-      todoId: uuidv4(),
-      title,
-      content,
-      date: new Date().toLocaleDateString(),
-    };
-    user.todos.push(todo);
-    await user.save();
-    res.redirect("/");
+  if (req.cookies["user"]) {
+    try {
+      const user = await User.findOne({
+        username: cryptr.decrypt(req.cookies["user"]),
+      });
+      if (user) {
+        const todo = {
+          todoId: uuidv4(),
+          title,
+          content,
+          date: new Date().toLocaleDateString(),
+        };
+        user.todos.push(todo);
+        await user.save();
+        res.redirect("/");
+      } else {
+        res.redirect("/signin");
+      }
+    } catch (e) {
+      if (e.name === "TypeError") {
+        return res.redirect("/signin");
+      }
+    }
   } else {
-    res.redirect("/signin");
+    return res.redirect("/signin");
   }
 });
 
@@ -143,29 +188,53 @@ router.post(
   async (req: express.Request, res: express.Response) => {
     const { id } = req.params;
     const { title, content } = req.body;
-    if (isEmpty(title)) {
+    if (req.body === null) {
       return res.redirect(`/edit/${id}`);
     }
+
+    if (title || content) {
+      if (isEmpty(title) || isEmpty(content)) {
+        return res.redirect(`/edit/${id}`);
+      }
+    }
+
+    if (title === "" || content === "") {
+      return res.redirect(`/edit/${id}`);
+    }
+
     if (!title || !content) {
       return res.redirect(`/edit/${id}`);
     }
-    const user = await User.findOne({
-      username: cryptr.decrypt(req.cookies["user"]),
-    });
-    if (user) {
-      let todo = user.todos.find((todo) => todo.todoId === id) as TodoInterface;
-      todo.title = title;
-      todo.content = content;
-      todo.date = new Date().toLocaleDateString() + " (edited)";
-      await user.save();
-      res.redirect("/");
+
+    if (req.cookies["user"]) {
+      try {
+        const user = await User.findOne({
+          username: cryptr.decrypt(req.cookies["user"]),
+        });
+        if (user) {
+          let todo = user.todos.find(
+            (todo) => todo.todoId === id
+          ) as TodoInterface;
+          todo.title = title;
+          todo.content = content;
+          todo.date = new Date().toLocaleDateString() + " (edited)";
+          await user.save();
+          res.redirect("/");
+        } else {
+          res.redirect("/signin");
+        }
+      } catch (e) {
+        if (e.name === "TypeError") {
+          return res.redirect("/signin");
+        }
+      }
     } else {
-      res.redirect("/signin");
+      return res.redirect("/signin");
     }
   }
 );
 
-router.get("/logout", async (req: express.Request, res: express.Response) => {
+router.post("/logout", async (req: express.Request, res: express.Response) => {
   const user = req.cookies["user"];
   if (user) {
     res.cookie("user", "");

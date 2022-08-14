@@ -22,21 +22,23 @@
 
   <body style="padding: 50px">
     <h2 class="title">
+			<form action="/api/logout" method="POST">
+	      <a
+	        class="button is-primary is-rounded"
+	        style="float: right; margin: 3px 3px 3px 3px"
+					href="/new"
+	      >
+	        <i class="fa-solid fa-plus"></i>
+	      </a>
+	      <button
+	        class="button is-danger is-rounded"
+	        style="float: right; margin: 3px 3px 3px 3px"
+					type="submit"
+	      >
+	        <i class="fas fa-door-open"></i>
+	      </button>
+			</form>
       Hey, <%= user.username %>!
-      <button
-        class="button is-primary is-rounded"
-        style="float: right; margin: 3px 3px 3px 3px"
-        onclick="window.location = '/new'"
-      >
-        <i class="fa-solid fa-plus"></i>
-      </button>
-      <button
-        class="button is-danger is-rounded"
-        style="float: right; margin: 3px 3px 3px 3px"
-        onclick="window.location = '/api/logout'"
-      >
-        <i class="fas fa-door-open"></i>
-      </button>
     </h2>
     <hr />
     <div class="block">
@@ -54,18 +56,21 @@
             <p class="subtitle">
               <b> <%= todo.title %> </b>&nbsp;
               <span style="color: grey"> <%= todo.date %> </span
-              ><br /><br /><button
-                class="button is-info"
-                onclick='window.location = "/edit/<%= todo.todoId %>"'
-              >
-                <i class="fas fa-pencil-alt"></i>&nbsp;&nbsp;Edit</button
-              >&nbsp;
-              <button
-                class="button is-danger"
-                onclick='window.location = "/api/del/<%= todo.todoId %>"'
-              >
-                <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete
-              </button>
+              ><br />
+							<form action="/api/del/<%= todo.todoId %>" method="POST">
+								<a
+		              class="button is-info"
+									href="/edit/<%= todo.todoId %>"
+		            >
+		              <i class="fas fa-pencil-alt"></i>&nbsp;&nbsp;Edit</a
+		            >&nbsp;
+		            <button
+		              class="button is-danger"
+									type="submit"
+		            >
+		              <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Delete
+		            </button>
+							</form>
             </p>
           </div>
           <hr />

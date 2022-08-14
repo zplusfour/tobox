@@ -7,10 +7,11 @@ import dotenv from "dotenv";
 import api from "./api";
 import Cryptr from "cryptr";
 import cookieParser from "cookie-parser";
-const app = express();
-const cryptr = new Cryptr("verysecretpasswordxkjwloi2xnrewi");
 
 dotenv.config();
+
+const app = express();
+const cryptr = new Cryptr(`${process.env.SUPER_SECRET}`);
 
 app.set("view engine", "html");
 app.engine("html", ejs.renderFile);
@@ -21,20 +22,37 @@ mongoose.connect(`${process.env.MDB_URI}`);
 
 app.get("/", async (req: express.Request, res: express.Response) => {
   const user = req.cookies["user"];
-  if (user) {
-    res.render("index", {
-      user: await User.findOne({ username: cryptr.decrypt(user) }),
-    });
-  } else {
-    res.redirect("/signin");
+  try {
+    if (user && (await User.findOne({ username: cryptr.decrypt(user) }))) {
+      res.render("index", {
+        user: await User.findOne({ username: cryptr.decrypt(user) }),
+      });
+    } else {
+      res.redirect("/signin");
+    }
+  } catch (e) {
+    if (e.name === "TypeError") {
+      return res.redirect("/signin");
+    } else {
+      return res.send(e);
+    }
   }
 });
 
-app.get("/signin", (req: express.Request, res: express.Response) => {
-  if (req.cookies["user"]) {
-    res.redirect("/");
-  } else {
-    res.render("signin");
+app.get("/signin", async (req: express.Request, res: express.Response) => {
+  try {
+    if (
+      req.cookies["user"] &&
+      (await User.findOne({ username: cryptr.decrypt(req.cookies["user"]) }))
+    ) {
+      res.redirect("/");
+    } else {
+      res.render("signin");
+    }
+  } catch (e) {
+    if (e.name === "Error") {
+      console.log(e);
+    }
   }
 });
 
