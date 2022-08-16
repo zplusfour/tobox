@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "ship": "tsnd --respawn src/index.ts"
+    "ship": "yarn global add ts-node-dev typescript ; clear ; tsnd --respawn src/index.ts"
   },
   "keywords": [],
   "author": "",
