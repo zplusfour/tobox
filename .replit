@@ -1,4 +1,4 @@
-run = "npx ts-node-dev --respawn src/index.ts"
+run = "yarn ship"
 
 [nix]
 channel = "stable-21_11"
