@@ -17,7 +17,7 @@
       type="text/css"
       href="https://unpkg.com/bulma-prefers-dark"
     />
-    <title>Dashboard</title>
+    <title>Tobox</title>
   </head>
 
   <body style="padding: 50px">
@@ -49,12 +49,12 @@
             You currently have no todos... <a href="/new">Create a new one!</a>
           </p>
           <% } else { %>
-          <h2 class="subtitle">Your todos:</h2>
+          <h2 class="subtitle">Your tasks:</h2>
           <% user.todos.reverse().forEach((todo)=> { %>
 
           <div class="box">
             <p class="subtitle">
-              <b> <a href="/view/<%= todo.todoId %>"><%= todo.title %></a> </b>&nbsp;
+              <b id="title"> <a href="/view/<%= todo.todoId %>"><%= todo.title %></a> </b>&nbsp;
               <span style="color: grey"> <%= todo.date %> </span
               ><br />
 							<form action="/api/del/<%= todo.todoId %>" method="POST">
@@ -78,5 +78,6 @@
         <% }); %> <% } %>
       </div>
     </div>
+		
   </body>
 </html>
