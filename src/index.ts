@@ -121,6 +121,10 @@ app.get("/view/:id", async (req: express.Request, res: express.Response) => {
   }
 });
 
+app.get("/up", (_req: express.Request, res: express.Response) => {
+	res.json({ message: "OK", status: 200 });
+});
+
 app.listen(8080, () => {
   console.log("Listening on port 8080");
 });
