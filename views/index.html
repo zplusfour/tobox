@@ -17,11 +17,18 @@
       type="text/css"
       href="https://unpkg.com/bulma-prefers-dark"
     />
+		<style>
+			@media (prefers-color-scheme: dark) {
+				#header {
+					background-color: #17181c;
+				}
+			}
+		</style>
     <title>Tobox</title>
   </head>
 
-  <body style="padding: 50px">
-    <h2 class="title">
+  <body style="padding: 50px;">
+    <h2 class="title" id="header" style="position: sticky; top: 0; padding: 10px;">
 			<form action="/api/logout" method="POST">
 	      <a
 	        class="button is-primary is-rounded"
@@ -43,7 +50,7 @@
     <hr />
     <div class="block">
       <div>
-        <div>
+        <div style="padding: 10px;">
           <% if (user.todos.length===0) { %>
           <p>
             You currently have no tasks... <a href="/new">Create a new one!</a>
@@ -78,6 +85,5 @@
         <% }); %> <% } %>
       </div>
     </div>
-		
   </body>
 </html>

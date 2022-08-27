@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "argon2": "^0.28.7",
+    "bulma-variables-export": "^0.2.0",
     "express-rate-limit": "^6.5.1",
     "mongoose": "^6.5.2"
   }
