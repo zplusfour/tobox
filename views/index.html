@@ -21,6 +21,16 @@
 			@media (prefers-color-scheme: dark) {
 				#header {
 					background-color: #17181c;
+					border-bottom: 3px solid #101012;
+					padding-bottom: 20px;
+				}
+			}
+
+			@media (prefers-color-scheme: light) {
+				#header {
+					background-color: #ffffff;
+					border-bottom: 3px solid #101012;
+					padding-bottom: 20px;
 				}
 			}
 		</style>
@@ -28,7 +38,7 @@
   </head>
 
   <body style="padding: 50px;">
-    <h2 class="title" id="header" style="position: sticky; top: 0; padding: 10px;">
+    <h2 class="title" id="header" style="position: sticky; top: 0;">
 			<form action="/api/logout" method="POST">
 	      <a
 	        class="button is-primary is-rounded"
@@ -47,10 +57,10 @@
 			</form>
       Hey, <%= user.username %>!
     </h2>
-    <hr />
+    <br />
     <div class="block">
       <div>
-        <div style="padding: 10px;">
+        <div>
           <% if (user.todos.length===0) { %>
           <p>
             You currently have no tasks... <a href="/new">Create a new one!</a>
