@@ -53,10 +53,10 @@
 				<a
 					class="button is-info is-rounded"
 					style="float: right; margin: 2.5px 2.5px 2.5px 2.5px"
-					href="/archive"
-					title="Archive"
+					href="/"
+					title="Home"
 				>
-					<i class="fa-solid fa-inbox"></i>
+					<i class="fas fa-home"></i>
 				</a>
 					
 				</a>
@@ -75,27 +75,20 @@
     <div class="block">
       <div>
         <div>
-          <% if (user.todos.length===0) { %>
+          <% if (user.archive.length===0) { %>
           <p>
-            You currently have no tasks... <a href="/new">Create a new one!</a>
+            You currently have no tasks in the archive...
           </p>
           <% } else { %>
-          <h2 class="subtitle">Your tasks:</h2>
-          <% user.todos.reverse().forEach((todo)=> { %>
+          <h2 class="subtitle">Your archive:</h2>
+          <% user.archive.reverse().forEach((todo)=> { %>
 
           <div class="box">
             <p class="subtitle">
-              <b id="title"> <a href="/view/<%= todo.todoId %>"><%= todo.title %></a> </b>&nbsp;
+              <b id="title"><%= todo.title %></b>&nbsp;
               <span style="color: grey"> <%= todo.date %> </span
               ><br />
-							<form action="/api/del/<%= todo.todoId %>" method="POST">
-								<a
-		              class="button is-info"
-									href="/edit/<%= todo.todoId %>"
-									title="Edit task"
-		            >
-		              <i class="fas fa-pencil-alt"></i></a
-		            >&nbsp;
+							<form action="/api/archive/del/<%= todo.todoId %>" method="POST">
 		            <button
 		              class="button is-danger"
 									type="submit"
@@ -105,10 +98,10 @@
 		            </button>&nbsp;
 								<a
 									class="button is-primary"
-									href="/api/archive/<%= todo.todoId %>"
-									title="Archive task"
+									href="/api/unarchive/<%= todo.todoId %>"
+									title="Unarchive task"
 								>
-									<i class="fa-solid fa-box-archive"></i>
+									<i class="fas fa-box"></i>
 								</a>
 							</form>
             </p>

@@ -6,9 +6,11 @@ import { User } from "./db/schemas";
 import dotenv from "dotenv";
 import api from "./api";
 import Cryptr from "cryptr";
+import * as argon2 from "argon2";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
+const bannedIps: string[] = JSON.parse(String(process.env.BANNED_IPS)) as string[];
 
 const app = express();
 const cryptr = new Cryptr(`${process.env.SUPER_SECRET}`);
@@ -24,9 +26,15 @@ app.get("/", async (req: express.Request, res: express.Response) => {
   const user = req.cookies["user"];
   try {
     if (user && (await User.findOne({ username: cryptr.decrypt(user) }))) {
-      res.render("index", {
-        user: await User.findOne({ username: cryptr.decrypt(user) }),
-      });
+			for (const ip of bannedIps) {
+				if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+					return res.status(403).send("You are banned from this site");
+				} else {
+					res.render("index", {
+        		user: await User.findOne({ username: cryptr.decrypt(user) }),
+      		});
+				}
+			}
     } else {
       res.redirect("/signin");
     }
@@ -39,13 +47,47 @@ app.get("/", async (req: express.Request, res: express.Response) => {
   }
 });
 
+app.get("/archive", async (req: express.Request, res: express.Response) => {
+	const username = req.cookies['user'];
+  const user: any = await User.findOne({ username: cryptr.decrypt(username) });
+
+	try {
+		if (username && user) {
+			for (const ip of bannedIps) {
+				if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+					res.status(403).send("You are banned from this site");
+					return;
+				} else {
+					res.render("archive", { user });
+				}
+			}
+		} else {
+			res.redirect("/signin")
+		}
+	} catch (e) {
+		if (e.name === "TypeError") {
+			return res.redirect("/signin");
+		} else {
+			return res.send(e);
+		}
+	}
+});
+
+
 app.get("/signin", async (req: express.Request, res: express.Response) => {
   try {
     if (
       req.cookies["user"] &&
       (await User.findOne({ username: cryptr.decrypt(req.cookies["user"]) }))
     ) {
-      res.redirect("/");
+			for (const ip of bannedIps) {
+				if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+					res.status(403).send("You are banned from this site");
+					return;
+				} else {
+      		res.redirect("/");
+				}
+			}
     } else {
       res.render("signin");
     }
@@ -56,20 +98,48 @@ app.get("/signin", async (req: express.Request, res: express.Response) => {
   }
 });
 
-app.get("/signup", (req: express.Request, res: express.Response) => {
+app.get("/signup", async (req: express.Request, res: express.Response) => {
   if (req.cookies["user"]) {
-    res.redirect("/");
+    for (const ip of bannedIps) {
+			if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+				res.status(403).send("You are banned from this site");
+				return;
+			} else {
+     		res.redirect("/");
+			}
+		}
   } else {
-    res.render("signup");
+    for (const ip of bannedIps) {
+			if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+				res.status(403).send("You are banned from this site");
+				return;
+			} else {
+     		res.render("signup");
+			}
+		}
   }
 });
 
 app.get("/new", async (req: express.Request, res: express.Response) => {
   const user = req.cookies["user"];
   if (user) {
-    res.render("new");
+		for (const ip of bannedIps) {
+			if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+				res.status(403).send("You are banned from this site");
+				return;
+			} else {
+     		res.render("new");
+			}
+		}
   } else {
-    res.redirect("/signin");
+    for (const ip of bannedIps) {
+			if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+				res.status(403).send("You are banned from this site");
+				return;
+			} else {
+     		res.redirect("/signin");
+			}
+		}
   }
 });
 
@@ -86,15 +156,36 @@ app.get("/edit/:id", async (req: express.Request, res: express.Response) => {
       _id: ObjectId;
     }) => todo.todoId === id
   );
-
+	
   if (username) {
     if (typeof todo === "undefined") {
-      res.render("error", { err: "Todo not found." });
+			for (const ip of bannedIps) {
+				if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+					res.status(403).send("You are banned from this site");
+					return;
+				} else {
+     			res.render("error", { err: "Todo not found." });
+				}
+			}
     } else {
-      res.render("edit", { todo });
+			for (const ip of bannedIps) {
+				if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+					res.status(403).send("You are banned from this site");
+					return;
+				} else {
+     			res.render("edit", { todo });
+				}
+			}
     }
   } else {
-    res.redirect("/signin");
+		for (const ip of bannedIps) {
+			if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+				res.status(403).send("You are banned from this site");
+				return;
+			} else {
+  			res.redirect("/signin");
+			}
+		}
   }
 });
 
@@ -114,15 +205,36 @@ app.get("/view/:id", async (req: express.Request, res: express.Response) => {
 
   if (username) {
     if (typeof todo === "undefined") {
-      res.render("error", { err: "Todo not found." });
+			for (const ip of bannedIps) {
+				if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+					res.status(403).send("You are banned from this site");
+					return;
+				} else {
+     			res.render("error", { err: "Todo not found." });
+				}
+			}
     } else {
-      res.render("view", { todo });
+			for (const ip of bannedIps) {
+				if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+					res.status(403).send("You are banned from this site");
+					return;
+				} else {
+     			res.render("view", { todo });
+				}
+			}
     }
   }
 });
 
-app.get("/up", (_req: express.Request, res: express.Response) => {
-	res.json({ message: "OK", status: 200 });
+app.get("/up", async (req: express.Request, res: express.Response) => {
+	for (const ip of bannedIps) {
+		if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+			res.status(403).send("You are banned from this site");
+			return;
+		} else {
+			res.json({ message: "OK", status: 200 });
+		}
+	}
 });
 
 app.listen(8080, () => {

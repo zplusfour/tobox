@@ -29,7 +29,65 @@ const isEmpty = (str: any) => {
 };
 
 router.get("/", (_req: express.Request, res: express.Response) => {
-  res.json({ message: "OK", status: 200 });
+  res.send("no");
+});
+
+router.get("/archive", (_req: express.Request, res: express.Response) => {
+	res.send("no");
+});
+
+router.get("/archive/:id", async (req: express.Request, res: express.Response) => {
+	const { id } = req.params;
+  if (req.cookies["user"]) {
+    try {
+      const user = await User.findOne({
+        username: cryptr.decrypt(req.cookies["user"]),
+      });
+      if (user) {
+				const todo = user.todos.filter((todo) => todo.todoId === id);
+        const todos = user.todos.filter((todo) => todo.todoId !== id);
+        user.todos = todos;
+				user.archive.push(todo[0]);
+        await user.save();
+        res.redirect("/archive");
+      } else {
+        res.redirect("/signin");
+      }
+    } catch (e) {
+      if (e.name === "TypeError") {
+        return res.redirect("/signin");
+      }
+    }
+  } else {
+    return res.redirect("/signin");
+  }
+});
+
+router.get("/unarchive/:id", async (req: express.Request, res: express.Response) => {
+	const { id } = req.params;
+  if (req.cookies["user"]) {
+    try {
+      const user = await User.findOne({
+        username: cryptr.decrypt(req.cookies["user"]),
+      });
+      if (user) {
+				const todo = user.archive.filter((todo) => todo.todoId === id)[0];
+        const todos = user.archive.filter((todo) => todo.todoId !== id);
+        user.archive = todos;
+				user.todos.push(todo);
+        await user.save();
+        res.redirect("/");
+      } else {
+        res.redirect("/signin");
+      }
+    } catch (e) {
+      if (e.name === "TypeError") {
+        return res.redirect("/signin");
+      }
+    }
+  } else {
+    return res.redirect("/signin");
+  }
 });
 
 router.post("/signup", async (req: express.Request, res: express.Response) => {
@@ -52,6 +110,7 @@ router.post("/signup", async (req: express.Request, res: express.Response) => {
     return res.redirect("/signup");
   }
   const hashedPassword = await argon2.hash(password);
+	const hashedIp = await argon2.hash(String(req.headers['x-forwarded-for']));
 
   if (await User.findOne({ username })) {
     res.json({ message: "Username already exists", status: 400 });
@@ -59,6 +118,7 @@ router.post("/signup", async (req: express.Request, res: express.Response) => {
     const user = new User({
       username,
       password: hashedPassword,
+			ip: hashedIp,
       todos: [
         {
           todoId: uuidv4(),
@@ -119,6 +179,31 @@ router.post("/del/:id", async (req: express.Request, res: express.Response) => {
         user.todos = todos;
         await user.save();
         res.redirect("/");
+      } else {
+        res.redirect("/signin");
+      }
+    } catch (e) {
+      if (e.name === "TypeError") {
+        return res.redirect("/signin");
+      }
+    }
+  } else {
+    return res.redirect("/signin");
+  }
+});
+
+router.post("/archive/del/:id", async (req: express.Request, res: express.Response) => {
+	const { id } = req.params;
+  if (req.cookies["user"]) {
+    try {
+      const user = await User.findOne({
+        username: cryptr.decrypt(req.cookies["user"]),
+      });
+      if (user) {
+        const todos = user.archive.filter((todo) => todo.todoId !== id);
+        user.archive = todos;
+        await user.save();
+        res.redirect("/archive");
       } else {
         res.redirect("/signin");
       }
