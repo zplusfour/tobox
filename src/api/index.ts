@@ -49,7 +49,7 @@ router.get("/archive/:id", async (req: express.Request, res: express.Response) =
         user.todos = todos;
 				user.archive.push(todo[0]);
         await user.save();
-        res.redirect("/archive");
+        res.redirect("/");
       } else {
         res.redirect("/signin");
       }
@@ -76,7 +76,7 @@ router.get("/unarchive/:id", async (req: express.Request, res: express.Response)
         user.archive = todos;
 				user.todos.push(todo);
         await user.save();
-        res.redirect("/");
+        res.redirect("/archive");
       } else {
         res.redirect("/signin");
       }
