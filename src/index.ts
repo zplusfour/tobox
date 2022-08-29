@@ -89,6 +89,7 @@ app.get("/signin", async (req: express.Request, res: express.Response) => {
 				}
 			}
     } else {
+			res.cookie("user", "");
       res.render("signin");
     }
   } catch (e) {
@@ -105,7 +106,15 @@ app.get("/signup", async (req: express.Request, res: express.Response) => {
 				res.status(403).send("You are banned from this site");
 				return;
 			} else {
-     		res.redirect("/");
+				try {
+					cryptr.encrypt(req.cookies["user"]);
+				} catch (e) {
+					if (e.name === "TypeError") {
+						res.cookie("user", "");
+					} else {
+						res.redirect("/")
+					}
+				}
 			}
 		}
   } else {
