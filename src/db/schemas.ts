@@ -7,10 +7,17 @@ export type TodoInterface = {
   date: string;
 };
 
+export type Warn = {
+	title: string;
+	reason: string;
+};
+
 export type UserInterface = {
   username: string;
   password: string;
 	ip: string;
+	createdOn: string;
+	warns: Warn[];
 	archive: TodoInterface[];
   todos: TodoInterface[];
 };
@@ -29,6 +36,22 @@ const UserSchema: mongoose.Schema<UserInterface> = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	createdOn: {
+		type: String,
+		required: true
+	},
+	warns: [
+		{
+			title: {
+				type: String,
+				required: true
+			},
+			reason: {
+				type: String,
+				required: true
+			}
+		}
+	],
 	archive: [
 		{
 			todoId: {

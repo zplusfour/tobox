@@ -44,7 +44,7 @@
 			<form action="/api/logout" method="POST">
 	      <a
 	        class="button is-primary is-rounded"
-	        style="float: right; margin: 2.5px 2.5px 2.5px 2.5px"
+	        style="float: right; margin: 2.7px 2.7px 2.7px 2.7px"
 					href="/new"
 					title="New task"
 	      >
@@ -52,17 +52,23 @@
 	      </a>
 				<a
 					class="button is-info is-rounded"
-					style="float: right; margin: 2.5px 2.5px 2.5px 2.5px"
+					style="float: right; margin: 2.7px 2.7px 2.7px 2.7px"
 					href="/"
-					title="Home"
+					title="Archive"
 				>
-					<i class="fas fa-home"></i>
+					<i class="fa-solid fa-home"></i>
 				</a>
-					
+				<a
+					class="button is-danger is-rounded"
+					style="float: right; margin: 2.7px 2.7px 2.7px 2.7px"
+					href="/warns"
+					title="Warns"
+				>
+					<i class="fas fa-exclamation"></i>&nbsp;(<%= user.warns.length %>)
 				</a>
 	      <button
 	        class="button is-danger is-rounded"
-	        style="float: right; margin: 2.5px 2.5px 2.5px 2.5px"
+	        style="float: right; margin: 2.7px 2.7px 2.7px 2.7px"
 					type="submit"
 					title="Log out"
 	      >

@@ -11,6 +11,7 @@ dotenv.config();
 
 const router = express.Router();
 const cryptr = new Cryptr(`${process.env.SUPER_SECRET}`);
+const bannedIps: string[] = JSON.parse(String(process.env.BANNED_IPS)) as string[];
 
 const apiLimiter = rateLimit({
   windowMs: 16 * 60 * 1000,
@@ -38,6 +39,12 @@ router.get("/archive", (_req: express.Request, res: express.Response) => {
 
 router.get("/archive/:id", async (req: express.Request, res: express.Response) => {
 	const { id } = req.params;
+	for (const ip of bannedIps) {
+		if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+			res.json({ mesage: "you're banned lol" });
+			return;
+		}
+	}
   if (req.cookies["user"]) {
     try {
       const user = await User.findOne({
@@ -65,6 +72,12 @@ router.get("/archive/:id", async (req: express.Request, res: express.Response) =
 
 router.get("/unarchive/:id", async (req: express.Request, res: express.Response) => {
 	const { id } = req.params;
+	for (const ip of bannedIps) {
+		if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+			res.json({ mesage: "you're banned lol" });
+			return;
+		}
+	}
   if (req.cookies["user"]) {
     try {
       const user = await User.findOne({
@@ -92,6 +105,12 @@ router.get("/unarchive/:id", async (req: express.Request, res: express.Response)
 
 router.post("/signup", async (req: express.Request, res: express.Response) => {
   const { username, password } = req.body;
+	for (const ip of bannedIps) {
+		if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+			res.json({ mesage: "you're banned lol" });
+			return;
+		}
+	}
   if (req.body === null) {
     return res.redirect("/signup");
   }
@@ -131,6 +150,7 @@ router.post("/signup", async (req: express.Request, res: express.Response) => {
       username,
       password: hashedPassword,
 			ip: hashedIp,
+			createdOn: new Date().toLocaleDateString(),
       todos: [
         {
           todoId: uuidv4(),
@@ -148,6 +168,12 @@ router.post("/signup", async (req: express.Request, res: express.Response) => {
 
 router.post("/signin", async (req: express.Request, res: express.Response) => {
   const { username, password } = req.body;
+	for (const ip of bannedIps) {
+		if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+			res.json({ mesage: "you're banned lol" });
+			return;
+		}
+	}
   if (req.body === null) {
     return res.redirect("/signin");
   }
@@ -181,6 +207,12 @@ router.post("/signin", async (req: express.Request, res: express.Response) => {
 
 router.post("/del/:id", async (req: express.Request, res: express.Response) => {
   const { id } = req.params;
+	for (const ip of bannedIps) {
+		if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+			res.json({ mesage: "you're banned lol" });
+			return;
+		}
+	}
   if (req.cookies["user"]) {
     try {
       const user = await User.findOne({
@@ -206,6 +238,12 @@ router.post("/del/:id", async (req: express.Request, res: express.Response) => {
 
 router.post("/archive/del/:id", async (req: express.Request, res: express.Response) => {
 	const { id } = req.params;
+	for (const ip of bannedIps) {
+		if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+			res.json({ mesage: "you're banned lol" });
+			return;
+		}
+	}
   if (req.cookies["user"]) {
     try {
       const user = await User.findOne({
@@ -231,6 +269,12 @@ router.post("/archive/del/:id", async (req: express.Request, res: express.Respon
 
 router.post("/new", async (req: express.Request, res: express.Response) => {
   const { title, content } = req.body;
+	for (const ip of bannedIps) {
+		if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+			res.json({ mesage: "you're banned lol" });
+			return;
+		}
+	}
   if (req.body === null) {
     return res.redirect("/new");
   }
@@ -285,6 +329,12 @@ router.post(
   async (req: express.Request, res: express.Response) => {
     const { id } = req.params;
     const { title, content } = req.body;
+		for (const ip of bannedIps) {
+			if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+				res.json({ mesage: "you're banned lol" });
+				return;
+			}
+		}
     if (req.body === null) {
       return res.redirect(`/edit/${id}`);
     }
@@ -330,6 +380,36 @@ router.post(
     }
   }
 );
+
+router.post("/clear-warns", async (req: express.Request, res: express.Response) => {
+	for (const ip of bannedIps) {
+		if (await argon2.verify(ip, String(req.headers['x-forwarded-for']))) {
+			res.json({ mesage: "you're banned lol" });
+			return;
+		}
+	}
+
+	if (req.cookies["user"]) {
+    try {
+  	  const user = await User.findOne({
+  	    username: cryptr.decrypt(req.cookies["user"]),
+	    });
+      if (user) {
+        user.warns = [];
+				await user.save();
+				res.redirect("/warns");
+      } else {
+        res.redirect("/signin");
+      }
+    } catch (e) {
+      if (e.name === "TypeError") {
+        return res.redirect("/signin");
+      }
+    }
+  } else {
+  	return res.redirect("/signin");
+  }
+});
 
 router.post("/logout", async (req: express.Request, res: express.Response) => {
   const user = req.cookies["user"];

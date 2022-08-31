@@ -53,10 +53,10 @@
 				<a
 					class="button is-info is-rounded"
 					style="float: right; margin: 2.7px 2.7px 2.7px 2.7px"
-					href="/archive"
-					title="Archive"
+					href="/"
+					title="Home"
 				>
-					<i class="fa-solid fa-inbox"></i>&nbsp;(<%= user.archive.length %>)
+					<i class="fa-solid fa-home"></i>
 				</a>
 				<a
 					class="button is-danger is-rounded"
@@ -81,42 +81,28 @@
     <div class="block">
       <div>
         <div>
-          <% if (user.todos.length===0) { %>
+          <% if (user.warns.length===0) { %>
           <p>
-            You currently have no tasks... <a href="/new">Create a new one!</a>
+            No warnings found.
           </p>
           <% } else { %>
-          <h2 class="subtitle">Your tasks:</h2>
-          <% user.todos.reverse().forEach((todo)=> { %>
-
+          <h2 class="subtitle">Your warnings:
+						<form action="/api/clear-warns" method="POST" style="float: right;">
+		          <button
+		            class="button is-info"
+								type="submit"
+								title="Mark as read"
+		          >
+		            <i class="fas fa-check"></i>
+		          </button>
+						</form>
+					</h2>
+          <% user.warns.reverse().forEach((warn)=> { %>
           <div class="box">
             <p class="subtitle">
-              <b id="title"> <a href="/view/<%= todo.todoId %>"><%= todo.title %></a> </b>&nbsp;
-              <span style="color: grey"> <%= todo.date %> </span
-              ><br />
-							<form action="/api/del/<%= todo.todoId %>" method="POST">
-								<a
-		              class="button is-info"
-									href="/edit/<%= todo.todoId %>"
-									title="Edit task"
-		            >
-		              <i class="fas fa-pencil-alt"></i></a
-		            >&nbsp;
-		            <button
-		              class="button is-danger"
-									type="submit"
-									title="Delete task"
-		            >
-		              <i class="fas fa-trash-alt"></i>
-		            </button>&nbsp;
-								<a
-									class="button is-primary"
-									href="/api/archive/<%= todo.todoId %>"
-									title="Archive task"
-								>
-									<i class="fa-solid fa-box-archive"></i>
-								</a>
-							</form>
+              <b id="title"> <%= warn.title %> </b>&nbsp;
+              <span style="color: grey"> <%= warn.reason %> </span
+              >
             </p>
           </div>
           <hr />
