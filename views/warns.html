@@ -17,64 +17,64 @@
       type="text/css"
       href="https://unpkg.com/bulma-prefers-dark"
     />
-		<style>
-			@media (prefers-color-scheme: dark) {
-				#header {
-					background-color: #17181c;
-					border-bottom: 3px solid #101012;
-					padding-bottom: 20px;
-					padding-top: 10px;
-				}
-			}
+    <style>
+      @media (prefers-color-scheme: dark) {
+        #header {
+          background-color: #17181c;
+          border-bottom: 3px solid #101012;
+          padding-bottom: 20px;
+          padding-top: 10px;
+        }
+      }
 
-			@media (prefers-color-scheme: light) {
-				#header {
-					background-color: #ffffff;
-					border-bottom: 3px solid #101012;
-					padding-bottom: 20px;
-					padding-top: 10px;
-				}
-			}
-		</style>
+      @media (prefers-color-scheme: light) {
+        #header {
+          background-color: #ffffff;
+          border-bottom: 3px solid #101012;
+          padding-bottom: 20px;
+          padding-top: 10px;
+        }
+      }
+    </style>
     <title>Tobox</title>
   </head>
 
-  <body style="padding: 50px;">
-    <h2 class="title" id="header" style="position: sticky; top: 0;">
-			<form action="/api/logout" method="POST">
-	      <a
-	        class="button is-primary is-rounded"
-	        style="float: right; margin: 2.7px 2.7px 2.7px 2.7px"
-					href="/new"
-					title="New task"
-	      >
-	        <i class="fa-solid fa-plus"></i>
-	      </a>
-				<a
-					class="button is-info is-rounded"
-					style="float: right; margin: 2.7px 2.7px 2.7px 2.7px"
-					href="/"
-					title="Home"
-				>
-					<i class="fa-solid fa-home"></i>
-				</a>
-				<a
-					class="button is-danger is-rounded"
-					style="float: right; margin: 2.7px 2.7px 2.7px 2.7px"
-					href="/warns"
-					title="Warns"
-				>
-					<i class="fas fa-exclamation"></i>&nbsp;(<%= user.warns.length %>)
-				</a>
-	      <button
-	        class="button is-danger is-rounded"
-	        style="float: right; margin: 2.7px 2.7px 2.7px 2.7px"
-					type="submit"
-					title="Log out"
-	      >
-	        <i class="fas fa-door-open"></i>
-	      </button>
-			</form>
+  <body style="padding: 50px">
+    <h2 class="title" id="header" style="position: sticky; top: 0">
+      <form action="/api/logout" method="POST">
+        <a
+          class="button is-primary is-rounded"
+          style="float: right; margin: 2.7px 2.7px 2.7px 2.7px"
+          href="/new"
+          title="New task"
+        >
+          <i class="fa-solid fa-plus"></i>
+        </a>
+        <a
+          class="button is-info is-rounded"
+          style="float: right; margin: 2.7px 2.7px 2.7px 2.7px"
+          href="/"
+          title="Home"
+        >
+          <i class="fa-solid fa-home"></i>
+        </a>
+        <a
+          class="button is-danger is-rounded"
+          style="float: right; margin: 2.7px 2.7px 2.7px 2.7px"
+          href="/warns"
+          title="Warns"
+        >
+          <i class="fas fa-exclamation"></i>&nbsp;(<%= user.warns.length %>)
+        </a>
+        <button
+          class="button is-danger is-rounded"
+          style="float: right; margin: 2.7px 2.7px 2.7px 2.7px"
+          type="submit"
+          title="Log out"
+        >
+          <i class="fas fa-door-open"></i>
+        </button>
+      </form>
       Hey, <%= user.username %>!
     </h2>
     <br />
@@ -82,27 +82,21 @@
       <div>
         <div>
           <% if (user.warns.length===0) { %>
-          <p>
-            No warnings found.
-          </p>
+          <p>No warnings found.</p>
           <% } else { %>
-          <h2 class="subtitle">Your warnings:
-						<form action="/api/clear-warns" method="POST" style="float: right;">
-		          <button
-		            class="button is-info"
-								type="submit"
-								title="Mark as read"
-		          >
-		            <i class="fas fa-check"></i>
-		          </button>
-						</form>
-					</h2>
+          <h2 class="subtitle">
+            Your warnings:
+            <form action="/api/clear-warns" method="POST" style="float: right">
+              <button class="button is-info" type="submit" title="Mark as read">
+                <i class="fas fa-check"></i>
+              </button>
+            </form>
+          </h2>
           <% user.warns.reverse().forEach((warn)=> { %>
           <div class="box">
             <p class="subtitle">
               <b id="title"> <%= warn.title %> </b>&nbsp;
-              <span style="color: grey"> <%= warn.reason %> </span
-              >
+              <span style="color: grey"> <%= warn.reason %> </span>
             </p>
           </div>
           <hr />
